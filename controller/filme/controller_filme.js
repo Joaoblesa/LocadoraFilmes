@@ -8,7 +8,9 @@
 
 //Import do arquivo DAO para manipular o CRUD no BD
 const { json } = require('body-parser')
+
 const filmeDAO = require('../../model/DAO/filme.js')
+
 const { MESSAGE_SUCESS_REQUEST } = require('../modulo/config_message.js')
 
 const MESSAGE_DEFAULT = require('../modulo/config_message.js')
@@ -91,11 +93,22 @@ try {
             let result = await filmeDAO.setInsertFilms(filme)
                
             if(result){
-                MESSAGE.HEADER.status   =   MESSAGE.SUCESS_CREATED_TTER.status
-                MESSAGE.HEADER.status_code   =   MESSAGE.SUCESS_CREATED_TTER.status_code
-                MESSAGE.HEADER.message   =   MESSAGE.SUCESS_CREATED_TTER.message
+
+                //chama a funçao para receber o Id gerado no bd
+                let lastIdFilm = await filmeDAO.getSelectLastIdFilms()
+
+                if(lastIdFilm){
+                    //Adiciona no JSON de filme o ID que foi gerado pelo BD
+                    filme.id                        =                   lastIdFilm
+                    MESSAGE.HEADER.status           =   MESSAGE.SUCESS_CREATED_TTER.status
+                    MESSAGE.HEADER.status_code      =   MESSAGE.SUCESS_CREATED_TTER.status_code
+                    MESSAGE.HEADER.message          =   MESSAGE.SUCESS_CREATED_TTER.message
+                    MESSAGE.HEADER.response         =   filme
     
                 return MESSAGE.HEADER //201
+                }else{
+                    return MESSAGE.ERROR_INTERNAL_SERVER_MODEL //500
+                }
             }else{
                 return MESSAGE.ERROR_INTERNAL_SERVER_MODEL
             }
@@ -226,6 +239,7 @@ const validarDadosFilme = async function(filme){
         return false
     }
 }
+
 
 module.exports = {
     listarFilmes,

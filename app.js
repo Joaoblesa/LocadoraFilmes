@@ -23,6 +23,8 @@ app.use((request, response, next) => {
 
 const controllerFilme = require('./controller/filme/controller_filme.js')
 
+const controllerGenero = require('./controller/filme/controller_genero.js')
+
 app.get('/v1/locadora/filme', cors(), async (request, response) => {
     let filme = await controllerFilme.listarFilmes()
 
@@ -49,7 +51,7 @@ app.post('/v1/locadora/filme', cors(), bodyParserJSON, async function (request, 
     //Recebe o content type da requisição
     let contentType = request.headers['content-type']
 
-    //chama a funçai da controller para inserir o filme, enviamos os dados do body e o content-type
+    //chama a funçao da controller para inserir o filme, enviamos os dados do body e o content-type
     let filme = await controllerFilme.inserirFilme(dadosBody, contentType)
 
     response.status(filme.status_code)
@@ -72,6 +74,36 @@ app.delete('/v1/locadora/filme/:id', cors(), async function (request, response) 
     let filme = await controllerFilme.excluirFilme(idFilme)
     response.status(filme.status_code)
     response.json(filme)
+})
+
+app.get('/v1/locadora/genero', cors(), async (request, response) => {
+    let genero = await controllerGenero.ListarGenero()
+
+    const statusCode = genero?.status_code || 500; 
+
+    response.status(statusCode)
+    response.json(genero)
+})
+
+app.get('/v1/locadora/genero/:id', cors(), async (request, response) => {
+
+    let idGenero = request.params.id
+    let genero = await controllerGenero.buscarGeneroId(idGenero)
+
+    response.status(genero.status_code)
+    response.json(genero)
+
+})
+
+app.post('/v1/locadora/genero', cors(), bodyParserJSON, async function (request, response){
+
+    const contentType = request.header('content-type'); 
+
+    let genero = await controllerGenero.inserirGenero(request.body, contentType)
+
+    response.status(genero.status_code)
+    response.json(genero)
+
 })
 
 app.listen(PORT, () => {

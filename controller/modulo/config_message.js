@@ -11,7 +11,7 @@ const dataAtual = new Date()
 /************************MENSAGENS DE PADRONIZAÇÃO DO PROJETO***************************** */
 const HEADER     = {
                             development:        'Joao Vitor Blesa Silva',
-                            api_description:    'API para manipular daddos da locadora de filme',
+                            api_description:    'API para manipular dados da locadora de filme',
                             version:            '1.0.10.25',
                             request_date:       dataAtual.toLocaleDateString(),
                             status:             Boolean,
