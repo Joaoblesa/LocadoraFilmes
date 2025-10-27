@@ -5,34 +5,33 @@
  * Versao: 1.0
  *****************************************************************************************/
 
-//import da biblioteca do prismaClient
-const { PrismaClient } = require('../../generated/prisma')
 
-//Cria um objeto do prisma client para manipular os scripts SQL
-const prisma = new PrismaClient()
+const { PrismaClient, Prisma } = require('../../generated/prisma'); 
+const prisma = new PrismaClient();
 
-//retorna todos os genero do banco de dados
+
+// Função para listar todos os Gêneros
 const getSelectAllGenero = async function (){
 
     try {
         //script SQL
-        let sql = `select * from tbl_genero`
-    
+        let sql = `select * from tbl_genero order by id desc` // Adicionado order by para facilitar
+
         //Executa no BD o script SQL
         let genero = await prisma.$queryRawUnsafe(sql)
     
-        //validaçao para identificar se o retorno do BD e uma ARRAY (vazio ou com dados)
-        if(Array.isArray(genero))
+        // 3. CORREÇÃO: Validaçao para identificar se o retorno do BD e uma ARRAY e se tem dados.
+        if(Array.isArray(genero) && genero.length > 0)
             return genero
         else
             return false
     } catch (error) {
-        console.error("ERRO REAL DO PRISMA:", error);
-            return false
-        }
-
+        console.error("ERRO CRÍTICO DAO getSelectAllGenero:", error);
+        return false
+    }
 }
 
+// Função para buscar Gênero pelo ID
 const getSelectByidGenero = async function (id){
 
     try {
@@ -41,43 +40,79 @@ const getSelectByidGenero = async function (id){
 
         let genero = await prisma.$queryRawUnsafe(sql)
 
-        if(Array.isArray(genero))
+        if(Array.isArray(genero) && genero.length > 0)
             return genero
         else
-        return  false
+            return false
 
     } catch (error) {
+        console.error("ERRO CRÍTICO DAO getSelectByidGenero:", error);
         return false
     }
-
 }
 
+// Função para inserir novo Gênero
 const setInsertGenero = async function (dadosGenero){
     try {
-        let sql = `
-        insert into tbl_genero (nome, descricao)
-            values( 
-                '${dadosGenero.nome}',
-                '${dadosGenero.descricao}'
-            );
-        `
+        // CORREÇÃO: Usando o nome da tabela 'tbl_genero'
+        const novoGenero = await prisma.tbl_genero.create({ 
+            data: {
+                nome: dadosGenero.nome,
+                descricao: dadosGenero.descricao
+            }
+        });
+        return novoGenero; 
+        
+    } catch (error) {
+        console.error("ERRO CRÍTICO DAO setInsertGenero (Verifique a Conexão/Modelos):", error);
+        return false;
+    }
+}
 
-        let statusInsert = await prisma.$executeRawUnsafe(sql) 
+// Função para atualizar Gênero
+const setUpdateGeneros = async function(genero){
+    try {
+        let result = await prisma.$executeRaw(Prisma.sql`
+            UPDATE tbl_genero SET 
+                nome = ${genero.nome},
+                descricao = ${genero.descricao}
+            WHERE id = ${genero.id}
+        `);
 
-        if(statusInsert)
+        if(result)
             return true
         else
             return false
     } catch (error) {
-        console.error("ERRO CRÍTICO DAO setInsertGenero (Verifique a Conexão/SQL):", error)
+        console.error("ERRO CRÍTICO DAO setUpdateGeneros:", error);
         return false
     }
 }
 
+// Função para deletar Gênero
+const setDeleteGenero = async function(id){
+    try {
+
+        let sql = `DELETE FROM tbl_genero WHERE id = ${id}`
+
+        let result = await prisma.$executeRawUnsafe(sql)
+
+        if (result) {
+            return true
+        } else {
+            return false
+        }
+    } catch (error) {
+        console.log(error)
+        return false
+    }
+}
 
 
 module.exports = {
     getSelectAllGenero,
     getSelectByidGenero,
-    setInsertGenero
+    setInsertGenero,
+    setUpdateGeneros,
+    setDeleteGenero
 }
