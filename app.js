@@ -21,9 +21,15 @@ app.use((request, response, next) => {
     next()
 })
 
-const controllerFilme = require('./controller/filme/controller_filme.js')
+const controllerFilme = require('./controller/acessos_controller/controller_filme.js')
 
-const controllerGenero = require('./controller/filme/controller_genero.js')
+const controllerGenero = require('./controller/acessos_controller/controller_genero.js')
+
+const controllerAtor = require('./controller/acessos_controller/controller_ator.js')
+
+const controllerPersonagem = require('./controller/acessos_controller/controller_personagem.js')
+
+const controllerIdioma = require('./controller/acessos_controller/controller_idioma.js')
 
 //1
 app.get('/v1/locadora/filme', cors(), async (request, response) => {
@@ -141,6 +147,134 @@ app.delete('/v1/locadora/genero/:id', cors(), async function (request, response)
     response.json(genero)
 })
 
+//1
+app.get('/v1/locadora/ator', cors(), async (request, response) => {
+    let ator = await controllerAtor.listarAtor()
+
+    const statusCode = ator?.status_code || 500; 
+
+    response.status(statusCode)
+    response.json(ator)
+})
+
+//2
+app.get('/v1/locadora/ator/:id', cors(), async (request, response) => {
+
+    let idAtor = request.params.id
+    let ator = await controllerAtor.buscarAtorId(idAtor)
+
+    response.status(ator.status_code)
+    response.json(ator)
+
+})
+
+//3
+app.post('/v1/locadora/ator', cors(), bodyParserJSON, async function (request, response){
+    //Recebe o objeto JSON pelo body da requisição
+    let dadosBody = request.body
+
+    //Recebe o content type da requisição
+    let contentType = request.headers['content-type']
+
+    //chama a funçao da controller para inserir o ator, enviamos os dados do body e o content-type
+    let ator = await controllerAtor.inserirAtor(dadosBody, contentType)
+
+    response.status(ator.status_code)
+    response.json(ator)
+})
+
+//4
+app.put('/v1/locadora/ator/:id', cors(), bodyParserJSON, async function(request, response){
+    let dadosBody = request.body
+    let idAtor =  request.params.id
+    let contentType = request.headers['content-type']
+
+    let ator = await controllerAtor.atualizarAtor(dadosBody, idAtor, contentType)
+
+    response.status(ator.status_code)
+    response.json(ator)
+})
+//5
+app.delete('/v1/locadora/ator/:id', cors(), async function (request, response) {
+    let idAtor = request.params.id
+    let Ator = await controllerAtor.excluirAtor(idAtor)
+    response.status(Ator.status_code)
+    response.json(Ator)
+})
+
+//1
+app.get('/v1/locadora/personagem', cors(), async (request, response) => {
+    let personagem = await controllerPersonagem.ListarPersonagem()
+
+    const statusCode = personagem?.status_code || 500; 
+
+    response.status(statusCode)
+    response.json(personagem)
+})
+
+//2
+app.get('/v1/locadora/personagem/:id', cors(), async (request, response) => {
+
+    let idPersonagem = request.params.id
+    let personagem = await controllerPersonagem.buscarPersonagemId(idPersonagem)
+
+    response.status(personagem.status_code)
+    response.json(personagem)
+
+})
+
+//3
+app.post('/v1/locadora/personagem', cors(), bodyParserJSON, async function (request, response){
+    let dadosBody = request.body
+
+    let contentType = request.headers['content-type']
+
+    let personagem = await controllerPersonagem.inserirPersonagem(dadosBody, contentType)
+
+    response.status(personagem.status_code)
+    response.json(personagem)
+})
+
+//4
+app.put('/v1/locadora/personagem/:id', cors(), bodyParserJSON, async function(request, response){
+    let dadosBody = request.body
+    let idPersonagem =  request.params.id
+    let contentType = request.headers['content-type']
+
+    let personagem = await controllerPersonagem.atualizarPersonagem(dadosBody, idPersonagem, contentType)
+
+    response.status(personagem.status_code)
+    response.json(personagem)
+})
+
+//5
+app.delete('/v1/locadora/personagem/:id', cors(), async function (request, response) {
+    let idPersonagem = request.params.id
+    let personagem = await controllerPersonagem.excluirPersonagem(idPersonagem)
+    response.status(personagem.status_code)
+    response.json(personagem)
+})
+
+//1
+app.get('/v1/locadora/idioma', cors(), async (request, response) => {
+    let idioma = await controllerIdioma.ListarIdioma()
+
+    const statusCode = idioma?.status_code || 500; 
+
+    response.status(statusCode)
+    response.json(idioma)
+})
+
+//2
+app.get('/v1/locadora/idioma/:id', cors(), async (request, response) => {
+
+    let ididioma = request.params.id
+    let idioma = await controllerIdioma.buscarIdiomaId(ididioma)
+
+    response.status(idioma.status_code)
+    response.json(idioma)
+
+})
 
 app.listen(PORT, () => {
     console.log('API aguardando requisições.....')

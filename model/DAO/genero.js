@@ -54,7 +54,6 @@ const getSelectByidGenero = async function (id){
 // Função para inserir novo Gênero
 const setInsertGenero = async function (dadosGenero){
     try {
-        // CORREÇÃO: Usando o nome da tabela 'tbl_genero'
         const novoGenero = await prisma.tbl_genero.create({ 
             data: {
                 nome: dadosGenero.nome,
@@ -74,9 +73,9 @@ const setUpdateGeneros = async function(genero){
     try {
         let result = await prisma.$executeRaw(Prisma.sql`
             UPDATE tbl_genero SET 
-                nome = ${genero.nome},
-                descricao = ${genero.descricao}
-            WHERE id = ${genero.id}
+                nome        =              ${genero.nome},
+                descricao   =         ${genero.descricao}
+                WHERE id    =              ${genero.id}
         `);
 
         if(result)

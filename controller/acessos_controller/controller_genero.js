@@ -184,16 +184,15 @@ const excluirGenero = async function (id) {
     let MESSAGE = JSON.parse(JSON.stringify(MESSAGE_DEFAULT))
     try {
         if (id != '' && id != null && id != undefined && !isNaN(id)) {
-            // 1. Busca para validar se o ID existe
+            
             let validarID = await buscarGeneroId(id)
 
             if (validarID.status_code == 200) {
 
-                // 2. CORREÇÃO: Chamando a função DAO com o nome correto (setDeleteGenero, sem 's')
                 let result = await generoDAO.setDeleteGenero(parseInt(id))
 
                 if (result) {
-                    // 3. CORREÇÃO: Usando o objeto MESSAGE para acessar a constante de sucesso
+
                     MESSAGE.HEADER.status = MESSAGE.SUCCESS_DELETED_ITEM.status
                     MESSAGE.HEADER.status_code = MESSAGE.SUCCESS_DELETED_ITEM.status_code
                     MESSAGE.HEADER.message = MESSAGE.SUCCESS_DELETED_ITEM.message
@@ -201,15 +200,15 @@ const excluirGenero = async function (id) {
                     return MESSAGE.HEADER // 200
 
                 } else {
-                    return MESSAGE.ERROR_INTERNAL_SERVER_MODEL // 500 (Erro no DAO/Prisma que não seja 404)
+                    return MESSAGE.ERROR_INTERNAL_SERVER_MODEL 
                 }
             } else { 
-                // Retorna o erro da função buscarGeneroId (será 404, 400, ou 500)
+                
                 return validarID
             }
         } else {
             MESSAGE.ERROR_REQUIRED_FIELDS.invalid_field = 'Atributo [ID] inválido!!!'
-            return MESSAGE.ERROR_REQUIRED_FIELDS // 400
+            return MESSAGE.ERROR_REQUIRED_FIELDS 
         }
     } catch (error) {
         console.log(error)
