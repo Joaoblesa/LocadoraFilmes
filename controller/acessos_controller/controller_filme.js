@@ -11,6 +11,9 @@ const { json } = require('body-parser')
 
 const filmeDAO = require('../../model/DAO/filme.js')
 
+//import da controller filmeGenero(tabela de relaçao)
+const controllerFilmeGenero = require('../acessos_controller/controller_filme_genero.js')
+
 const { MESSAGE_SUCESS_REQUEST } = require('../modulo/config_message.js')
 
 const MESSAGE_DEFAULT = require('../modulo/config_message.js')
@@ -77,52 +80,66 @@ const buscarFilmeId = async function(id){
 }
 
 //Insere um novo filme
-const inserirFilme = async function(filme, contentType){
-    let MESSAGE = JSON.parse(JSON.stringify(MESSAGE_DEFAULT))
+const inserirFilmes = async function (filme, contentType) {
+    let MESSAGE = JSON.parse(JSON.stringify(MESSAGE_DEFAUT))
 
-try {
+    try {
 
-    if(String(contentType).toUpperCase() == 'APPLICATION/JSON'){
+        if (String(contentType).toLocaleUpperCase() == 'APPLICATION/JSON') {
 
-        //chama a funçao de validaçao dos dados de cadastro
-        let validarDados = await validarDadosFilme(filme)
+            //chama a função de validação dos dados de cadastro
+            let validarDados = await validarDadosFilme(filme)
 
-        if(!validarDados){
+            if (!validarDados) {
+                //Processamento verdadeiro
+                let result = await filmeDAO.setInsertFilms(filme)
 
-            //Chama a funçao do DAO para inserir um novo filme
-            let result = await filmeDAO.setInsertFilms(filme)
-               
-            if(result){
+                if (result) {
 
-                //chama a funçao para receber o Id gerado no bd
-                let lastIdFilm = await filmeDAO.getSelectLastIdFilms()
+                    //Chama a função para receber o ID gerado do BD
+                    let lastIdFilme = await filmeDAO.getSelectLastId()
 
-                if(lastIdFilm){
-                    //Adiciona no JSON de filme o ID que foi gerado pelo BD
-                    filme.id                        =                   lastIdFilm
-                    MESSAGE.HEADER.status           =   MESSAGE.SUCESS_CREATED_TTER.status
-                    MESSAGE.HEADER.status_code      =   MESSAGE.SUCESS_CREATED_TTER.status_code
-                    MESSAGE.HEADER.message          =   MESSAGE.SUCESS_CREATED_TTER.message
-                    MESSAGE.HEADER.response         =   filme
-    
-                return MESSAGE.HEADER //201
-                }else{
-                    return MESSAGE.ERROR_INTERNAL_SERVER_MODEL //500
+                    if (lastIdFilme) {
+
+                        // Processamento para inserir dados na tabela de relação entre filme e genero
+
+                        // Repetição para pegar cada genero e enviar para o DAO do filmeGenero
+                        filme.genero.forEach(async (genero) => {
+                            let filmeGenero = { filme_id: lastIdFilme, genero_id: genero.id }
+
+                            let resultFilmesGeneros = await controllerFilmeGenero.inserirFilmeGenero(filmeGenero, contentType)
+                            console.log(resultFilmesGeneros)
+                        });
+                        // Adiciona no JSON de filme o ID que foi gerado pelo BD
+                        filme.id = lastIdFilme
+                        MESSAGE.HEADER.status = MESSAGE.SUCESS_CREATED_ITEM.status
+                        MESSAGE.HEADER.status_code = MESSAGE.SUCESS_CREATED_ITEM.status_code
+                        MESSAGE.HEADER.message = MESSAGE.SUCESS_CREATED_ITEM.message
+                        MESSAGE.HEADER.response = filme
+
+                        return MESSAGE.HEADER //201 
+                    } else {
+                        return MESSAGE.ERROR_INTERNAL_SERVER_MODEL // 500
+                    }
+
+
+
+
+                } else {
+                    return MESSAGE.ERROR_INTERNAL_SERVER_MODEL // 500
                 }
-            }else{
-                return MESSAGE.ERROR_INTERNAL_SERVER_MODEL
+            } else {
+                return validarDados //400
             }
-        }else{
-            return validarDados //400
+        } else {
+            return MESSAGE.ERROR_CONTENT_TYPE //415
         }
-    }else {
-        return MESSAGE.ERROR_CONTENT_TYPE
-    } 
-} catch (error) {
-    return MESSAGE.ERROR_INTERNAL_SERVER_CONTROLLER
+    } catch (error) {
+        console.log(error)
+        return MESSAGE.ERROR_INTERNAL_SERVER_CONTROLLER //500
+    }
 }
 
-}
 
 //atualiza um filme filtrando pelo ID
 const atualizarFilme = async function(filme, id, contentType){
@@ -244,7 +261,7 @@ const validarDadosFilme = async function(filme){
 module.exports = {
     listarFilmes,
     buscarFilmeId,
-    inserirFilme,
+    inserirFilmes,
     atualizarFilme,
     excluirFilme
 }

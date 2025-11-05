@@ -276,6 +276,37 @@ app.get('/v1/locadora/idioma/:id', cors(), async (request, response) => {
 
 })
 
+//3
+app.post('/v1/locadora/idioma', cors(), bodyParserJSON, async function (request, response){
+    let dadosBody = request.body
+
+    let contentType = request.headers['content-type']
+
+    let idioma = await controllerIdioma.inserirIdioma(dadosBody, contentType)
+
+    response.status(idioma.status_code)
+    response.json(idioma)
+})
+
+//4
+app.put('/v1/locadora/idioma/:id', cors(), bodyParserJSON, async function(request, response){
+    let dadosBody = request.body
+    let ididioma =  request.params.id
+    let contentType = request.headers['content-type']
+
+    let idioma = await controllerIdioma.atualizarIdioma(dadosBody, ididioma, contentType)
+
+    response.status(idioma.status_code)
+    response.json(idioma)
+})
+
+app.delete('/v1/locadora/idioma/:id', cors(), async function (request, response) {
+    let ididioma = request.params.id
+    let idioma = await controllerIdioma.excluirIdioma(ididioma)
+    response.status(idioma.status_code)
+    response.json(idioma)
+})
+
 app.listen(PORT, () => {
     console.log('API aguardando requisições.....')
 })

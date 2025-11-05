@@ -1,3 +1,11 @@
+
+/******************************************************************************************
+ * Objetivo: Arquivo responsavel pela realização do CRUD de filme no Banco de Dados MYSQL
+ * Data:05/11/2025
+ * Autor: Joao Blesa
+ * Versao: 1.0
+ *****************************************************************************************/
+
 //import da biblioteca do prismaClient
 const { PrismaClient } = require('../../generated/prisma')
 
@@ -24,7 +32,7 @@ const getSelectAllIdioma = async function (){
         }
     }
 
-    const getSelectByid = async function (id){
+const getSelectByid = async function (id){
         
             try {
                 
@@ -43,7 +51,71 @@ const getSelectAllIdioma = async function (){
             }
         }
 
+const setInsertIdioma = async function(idioma) {
+        try {
+            
+            let sql = `
+                insert into tbl_idioma (
+                    nome
+                )
+                values(
+                    '${idioma.nome}'
+                );
+            `;
+            let result = await prisma.$executeRawUnsafe(sql);
+    
+            if (result)
+                return true;
+            else
+                return false;
+                
+        } catch (error) {
+            console.error("Erro no DAO (setInsertIdioma):", error);
+            return false; 
+        }
+    }
+
+const setUpdateIdioma= async function(idioma){
+        try {
+            let sql = `update tbl_idioma set 
+                            nome                      =   '${idioma.nome}'
+                            
+                        where id = ${idioma.id}`;
+    
+            let result = await prisma.$executeRawUnsafe(sql);
+    
+            if(result)
+                return true;
+            else
+                return false;
+        } catch (error) {
+            console.error("Erro no DAO (setUpdateIIdioma):", error);
+            return false;
+        }
+    }
+
+const setDeleteIdioma= async function(id){
+        try {
+    
+            let sql = `DELETE FROM tbl_idioma WHERE id = ${id}`
+    
+            let result = await prisma.$executeRawUnsafe(sql)
+    
+            if (result) {
+                return true
+            } else {
+                return false
+            }
+        } catch (error) {
+            console.log(error)
+            return false
+        }
+    }
+
     module.exports = {
         getSelectAllIdioma,
-        getSelectByid
+        getSelectByid,
+        setInsertIdioma,
+        setUpdateIdioma,
+        setDeleteIdioma
     }
