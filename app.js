@@ -31,6 +31,8 @@ const controllerPersonagem = require('./controller/acessos_controller/controller
 
 const controllerIdioma = require('./controller/acessos_controller/controller_idioma.js')
 
+const controllerPais = require('./controller/acessos_controller/controller_pais.js')
+
 //1
 app.get('/v1/locadora/filme', cors(), async (request, response) => {
     let filme = await controllerFilme.listarFilmes()
@@ -299,12 +301,65 @@ app.put('/v1/locadora/idioma/:id', cors(), bodyParserJSON, async function(reques
     response.status(idioma.status_code)
     response.json(idioma)
 })
-
+//5
 app.delete('/v1/locadora/idioma/:id', cors(), async function (request, response) {
     let ididioma = request.params.id
     let idioma = await controllerIdioma.excluirIdioma(ididioma)
     response.status(idioma.status_code)
     response.json(idioma)
+})
+
+//1
+app.get('/v1/locadora/pais', cors(), async (request, response) => {
+    let pais = await controllerPais.ListarPais()
+
+    const statusCode = pais?.status_code || 500; 
+
+    response.status(statusCode)
+    response.json(pais)
+})
+
+//2
+app.get('/v1/locadora/pais/:id', cors(), async (request, response) => {
+
+    let idPais = request.params.id
+    let pais = await controllerPais.buscarPaisId(idPais)
+
+    response.status(pais.status_code)
+    response.json(pais)
+
+})
+
+//3
+app.post('/v1/locadora/pais', cors(), bodyParserJSON, async function (request, response){
+    let dadosBody = request.body
+
+    let contentType = request.headers['content-type']
+
+    let pais = await controllerPais.inserirPais(dadosBody, contentType)
+
+    response.status(pais.status_code)
+    response.json(pais)
+})
+
+//4
+app.put('/v1/locadora/pais/:id', cors(), bodyParserJSON, async function(request, response){
+    let dadosBody = request.body
+    let idPais =  request.params.id
+    let contentType = request.headers['content-type']
+
+    let pais = await controllerPais.atualizarPais(dadosBody, idPais, contentType)
+
+    response.status(pais.status_code)
+    response.json(pais)
+})
+
+//5
+app.delete('/v1/locadora/pais/:id', cors(), async function (request, response) {
+    let idPais = request.params.id
+    let pais = await controllerPais.excluirPais(idPais)
+    response.status(pais.status_code)
+    response.json(pais)
 })
 
 app.listen(PORT, () => {

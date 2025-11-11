@@ -27,6 +27,7 @@ const ERROR_INTERNAL_SERVER_MODEL       = {status: false, status_code: 500, mess
 const ERROR_INTERNAL_SERVER_CONTROLLER  = {status: false, status_code: 500, message: 'Não foi possivel processar á requisição, devido a problemas na camada de CONTROLE de dados !!!'}
 const ERROR_REQUIRED_FIELDS             = {status: false, status_code: 400, message: 'Não foi possivel processar a requisição, devido a campos obrigatorio, que nao foram enviados corretamente, conforme a documentaçao da API !!!'}
 const ERROR_CONTENT_TIPE                = {status: false, status_code: 415, message: 'Nao foi possivel processar a requisiçao, pois  o tipo de conteudo enviado no body não é permitido'}
+const ERROR_RELATION_TABLE              = {status: false, status_code: 200, message: 'A Requisiçao foi bem sucedida na criaçao do item principal, porem ouveram problemas na tabela de relacionamento!!!'}
 /************************MENSAGENS DE SUCESSO DO PROJETO********************************** */
 const SUCESS_REQUEST            =   {status: true, status_code: 200, message: 'Requisição bem sucedida!!!'}
 const SUCESS_CREATED_TTER       =   {status: true, status_code: 201, message: 'Requisiçao bem sucedida, objeto criado com sucesso !!!'}
@@ -57,6 +58,7 @@ module.exports = {
     ERROR_INTERNAL_SERVER_MODEL,
     ERROR_INTERNAL_SERVER_CONTROLLER,
     ERROR_REQUIRED_FIELDS,
+    ERROR_RELATION_TABLE,
     SUCESS_CREATED_TTER,
     ERROR_CONTENT_TIPE,
     SUCESS_UPDATE_TTER,
