@@ -33,6 +33,10 @@ const controllerIdioma = require('./controller/acessos_controller/controller_idi
 
 const controllerPais = require('./controller/acessos_controller/controller_pais.js')
 
+const controllerDiretor = require ('./controller/acessos_controller/controller_diretor.js')
+
+const controllerDublador = require ('./controller/acessos_controller/controller_dublador.js')
+
 //1
 app.get('/v1/locadora/filme', cors(), async (request, response) => {
     let filme = await controllerFilme.listarFilmes()
@@ -360,6 +364,113 @@ app.delete('/v1/locadora/pais/:id', cors(), async function (request, response) {
     let pais = await controllerPais.excluirPais(idPais)
     response.status(pais.status_code)
     response.json(pais)
+})
+
+//1
+app.get('/v1/locadora/diretor', cors(), async (request, response) => {
+    let diretor = await controllerDiretor.listarDiretor()
+
+    const statusCode = diretor?.status_code || 500; 
+
+    response.status(statusCode)
+    response.json(diretor)
+})
+
+//2
+app.get('/v1/locadora/diretor/:id', cors(), async (request, response) => {
+
+    let idDiretor = request.params.id
+    let diretor = await controllerDiretor.buscarDiretorId(idDiretor)
+
+    response.status(diretor.status_code)
+    response.json(diretor)
+
+})
+
+//3
+app.post('/v1/locadora/diretor', cors(), bodyParserJSON, async function (request, response){
+    let dadosBody = request.body
+
+    let contentType = request.headers['content-type']
+
+    let diretor = await controllerDiretor.inserirDiretor(dadosBody, contentType)
+
+    response.status(diretor.status_code)
+    response.json(diretor)
+})
+
+//4
+app.put('/v1/locadora/diretor/:id', cors(), bodyParserJSON, async function(request, response){
+    let dadosBody = request.body
+    let idDiretor =  request.params.id
+    let contentType = request.headers['content-type']
+
+    let diretor = await controllerDiretor.atualizarDiretor(dadosBody, idDiretor, contentType)
+
+    response.status(diretor.status_code)
+    response.json(diretor)
+})
+
+//5
+app.delete('/v1/locadora/diretor/:id', cors(), async function (request, response) {
+    let idDiretor = request.params.id
+    let diretor = await controllerDiretor.excluirDiretor(idDiretor)
+    response.status(diretor.status_code)
+    response.json(diretor)
+})
+
+
+//1 dublador
+app.get('/v1/locadora/dublador', cors(), async (request, response) => {
+    let dublador = await controllerDublador.listarDublador()
+
+    const statusCode = dublador?.status_code || 500; 
+
+    response.status(statusCode)
+    response.json(dublador)
+})
+
+//2
+app.get('/v1/locadora/dublador/:id', cors(), async (request, response) => {
+
+    let idDublador = request.params.id
+    let dublador = await controllerDublador.buscarDubladorId(idDublador)
+
+    response.status(dublador.status_code)
+    response.json(dublador)
+
+})
+
+//3
+app.post('/v1/locadora/dublador', cors(), bodyParserJSON, async function (request, response){
+    let dadosBody = request.body
+
+    let contentType = request.headers['content-type']
+
+    let dublador = await controllerDublador.inserirDublador(dadosBody, contentType)
+
+    response.status(dublador.status_code)
+    response.json(dublador)
+})
+
+//4
+app.put('/v1/locadora/dublador/:id', cors(), bodyParserJSON, async function(request, response){
+    let dadosBody = request.body
+    let idDublador =  request.params.id
+    let contentType = request.headers['content-type']
+
+    let dublador = await controllerDublador.atualizarDublador(dadosBody, idDublador, contentType)
+
+    response.status(dublador.status_code)
+    response.json(dublador)
+})
+
+//5
+app.delete('/v1/locadora/dublador/:id', cors(), async function (request, response) {
+    let idDublador = request.params.id
+    let dublador = await controllerDublador.excluirDublador(idDublador)
+    response.status(dublador.status_code)
+    response.json(dublador)
 })
 
 app.listen(PORT, () => {

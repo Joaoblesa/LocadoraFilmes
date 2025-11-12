@@ -20,8 +20,7 @@ const prisma = new PrismaClient()
     
             //Executa no BD o script SQL
             let ator = await prisma.$queryRawUnsafe(sql)
-        
-            // 3. CORREÇÃO: Validaçao para identificar se o retorno do BD e uma ARRAY e se tem dados.
+
             if(Array.isArray(ator) && ator.length > 0)
                 return ator
             else
